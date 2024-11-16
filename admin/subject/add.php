@@ -17,8 +17,18 @@
             'subject_code' => $code,
             'subject_name' => $name
         ]);
+
+        $duplicateErrors = checkDuplicateSubjectData([
+            'subject_code' => $code,
+            'subject_name' => $name
+        ]);
+
+        $errorArray = array_merge($errorArray, $duplicateErrors);
+
         if (empty($errorArray)) {
             addSubject($code, $name);
+            $code = "";
+            $name = "";
         }
     }
 

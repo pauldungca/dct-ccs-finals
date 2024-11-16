@@ -131,6 +131,41 @@
         return $errorArray;
     }
 
+    function checkDuplicateSubjectData($subject_data) {
+        $errors = [];
+        $con = openCon();
+    
+        if ($con) {
+            $code = $subject_data['subject_code'];
+            $name = $subject_data['subject_name'];
+    
+            // Query to check for duplicate subject code or name
+            $sql = "SELECT * FROM subjects WHERE subject_code = ? OR subject_name = ?";
+            $stmt = mysqli_prepare($con, $sql);
+            mysqli_stmt_bind_param($stmt, "ss", $code, $name);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+    
+            if ($result && mysqli_num_rows($result) > 0) {
+                while ($row = mysqli_fetch_assoc($result)) {
+                    if ($row['subject_code'] == $code) {
+                        $errors[] = "A subject with this code already exists.";
+                    }
+                    if ($row['subject_name'] == $name) {
+                        $errors[] = "A subject with this name already exists.";
+                    }
+                }
+            }
+    
+            mysqli_stmt_close($stmt);
+            closeCon($con);
+        } else {
+            $errors[] = "Failed to connect to the database.";
+        }
+    
+        return $errors;
+    }
+
     function fetchSubjects() {
         $subjects = [];
         $con = openCon();
@@ -147,6 +182,7 @@
         }
         return $subjects;
     }
+
 
 
 ?>
