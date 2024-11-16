@@ -39,6 +39,21 @@
         }
     }
 
+    function addSubject($code, $name) {
+        $con = openCon();
+        if ($con) {  
+            $sql = "INSERT INTO subjects (subject_code, subject_name) VALUES ('$code', '$name')";
+            if (mysqli_query($con, $sql)) {
+                //echo "New record created successfully";
+            } else {
+                echo "Error: " . $sql . "<br>" . mysqli_error($con);
+            }
+            closeCon($con);
+        } else {
+            echo "Failed to connect to the database.";
+        }
+    }
+
     function getUsers() {
         $con = openCon();       
         $sql = "SELECT email, password FROM users";
@@ -81,12 +96,11 @@
             return ''; 
         } 
         $output = '
-        <div class="alert alert-danger alert-dismissible fade show mx-auto my-5" style="margin-bottom: 20px;" role="alert">
+        <div class="alert alert-danger alert-dismissible fade show mx-auto my-3" style="margin-bottom: 20px;" role="alert">
             <strong>System Errors:</strong> Please correct the following errors.
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             <hr>
             <ul>';
-    
         foreach ($errors as $error) {
             $output .= '<li>' . htmlspecialchars($error) . '</li>';
         }
@@ -105,5 +119,34 @@
             exit();  
         }
     }
+
+    function validateSubjectData($subject_data) {
+        $errorArray = [];
+        if (empty($subject_data['subject_code'])) {
+            $errorArray['subject_code'] = 'Subject code is required!';
+        }
+        if (empty($subject_data['subject_name'])) {
+            $errorArray['subject_name'] = 'Subject name is required!';
+        }
+        return $errorArray;
+    }
+
+    function fetchSubjects() {
+        $subjects = [];
+        $con = openCon();
+        if ($con) {
+            $result = mysqli_query($con, "SELECT * FROM subjects");
+            if ($result) {
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $subjects[] = $row;
+                }
+            }
+            closeCon($con);
+        } else {
+            echo "Failed to connect to the database.";
+        }
+        return $subjects;
+    }
+
 
 ?>
