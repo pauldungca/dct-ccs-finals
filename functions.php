@@ -22,11 +22,8 @@
     }
 
     function addUser() {
-
         $con = openCon();
-  
         if ($con) {
-
             $email = 'user2@gmail.com';
             $hashedPassword = md5('password'); 
             $name = 'user2';
@@ -107,6 +104,18 @@
         $output .= '</ul></div>';
     
         return $output;
+    }
+ 
+    function getBaseURL() {
+        return 'http://dct-ccs-finals.test/';
+    }
+
+    function guard() { 
+        if (!isset($_SESSION['email'])) {
+            header("Location: " . getBaseURL() . "index.php");
+            session_destroy();
+            exit();  
+        }
     }
 
 ?>
