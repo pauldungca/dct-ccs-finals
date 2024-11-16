@@ -9,6 +9,39 @@
 
     checkUserSessionIsActive();
 
+    function openCon() {
+        $con = mysqli_connect("localhost", "root", "", "dct-ccs-finals");  
+        if (!$con) {
+            die("Connection failed: " . mysqli_connect_error());
+        } 
+        return $con;
+    }
+    
+    function closeCon($con) {
+        return mysqli_close($con);
+    }
+
+    function addUser() {
+
+        $con = openCon();
+  
+        if ($con) {
+
+            $email = 'user2@gmail.com';
+            $hashedPassword = md5('password'); 
+            $name = 'user2';
+            $sql = "INSERT INTO users (email, password, name) VALUES ('$email', '$hashedPassword', '$name')";
+            if (mysqli_query($con, $sql)) {
+                echo "New record created successfully";
+            } else {
+                echo "Error: " . $sql . "<br>" . mysqli_error($con);
+            }
+            closeCon($con);
+        } else {
+            echo "Failed to connect to the database.";
+        }
+    }
+    
     function getUsers() {
         return [
             "admin1@gmail.com" => "pass1",
