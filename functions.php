@@ -41,19 +41,29 @@
             echo "Failed to connect to the database.";
         }
     }
-    
+
     function getUsers() {
-        return [
-            "admin1@gmail.com" => "pass1",
-            "admin2@gmail.com" => "pass2",
-            "admin3@gmail.com" => "pass3",
-            "admin4@gmail.com" => "pass4",
-            "admin5@gmail.com" => "pass5"
-        ];
+
+        $con = openCon();
+        
+        $sql = "SELECT email, password FROM users";
+        $result = mysqli_query($con, $sql);
+        
+        $users = [];
+        
+        if (mysqli_num_rows($result) > 0) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                $users[$row['email']] = $row['password'];
+            }
+        }
+        
+        closeCon($con);
+        
+        return $users;
     }
 
     function checkLoginCredentials($email, $password, $users) {
-        return isset($users[$email]) && $users[$email] === $password;
+        return isset($users[$email]) && $users[$email] === md5($password);  
     }
 
     function validateLoginCredentials($email, $password) {
@@ -98,9 +108,5 @@
     
         return $output;
     }
-
-
-
-
 
 ?>
