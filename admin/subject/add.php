@@ -37,7 +37,7 @@
                         <td>Math</td>
                         <td>
                             <a href="./edit.php" class="btn btn-info btn-sm">Edit</a>
-                            <button class="btn btn-danger btn-sm">Delete</button>
+                            <a href="./delete.php" class="btn btn-danger btn-sm">Delete</a>
                         </td>
                     </tr>
                 </tbody>
