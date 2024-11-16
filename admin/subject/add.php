@@ -1,7 +1,7 @@
 <?php 
     include '../../functions.php';
     guard();
-    $pageTitle = "Register Student";
+    $pageTitle = "Add Subject";
     include '../partials/header.php';
     include '../partials/side-bar.php';  
 ?>
@@ -36,19 +36,10 @@
                         <td>1001</td>
                         <td>Math</td>
                         <td>
-                            <button class="btn btn-info btn-sm">Edit</button>
+                            <a href="./edit.php" class="btn btn-info btn-sm">Edit</a>
                             <button class="btn btn-danger btn-sm">Delete</button>
                         </td>
                     </tr>
-                    <tr>
-                        <td>1002</td>
-                        <td>English</td>
-                        <td>
-                            <button class="btn btn-info btn-sm">Edit</button>
-                            <button class="btn btn-danger btn-sm">Delete</button>
-                        </td>
-                    </tr>
-                    <!-- Additional rows can be populated dynamically -->
                 </tbody>
             </table>
         </div>
