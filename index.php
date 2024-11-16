@@ -26,6 +26,7 @@
                         </div>
                         <div class="form-floating mb-3">
                             <button type="submit" name="login" class="btn btn-primary w-100">Login</button>
+                            <a href="./admin/dashboard.php">Dashboard</a>
                         </div>
                     </form>
                 </div>
