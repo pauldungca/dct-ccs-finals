@@ -40,22 +40,16 @@
     }
 
     function getUsers() {
-
-        $con = openCon();
-        
+        $con = openCon();       
         $sql = "SELECT email, password FROM users";
-        $result = mysqli_query($con, $sql);
-        
-        $users = [];
-        
+        $result = mysqli_query($con, $sql);    
+        $users = [];   
         if (mysqli_num_rows($result) > 0) {
             while ($row = mysqli_fetch_assoc($result)) {
                 $users[$row['email']] = $row['password'];
             }
-        }
-        
-        closeCon($con);
-        
+        }    
+        closeCon($con);     
         return $users;
     }
 
@@ -65,32 +59,27 @@
 
     function validateLoginCredentials($email, $password) {
         $errorArray = [];
-        $users = getUsers(); 
-    
+        $users = getUsers();  
         if (empty($email)) {
             $errorArray['email'] = 'Email Address is required!';
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $errorArray['email'] = 'Email Address is invalid!';
         }
-    
         if (empty($password)) {
             $errorArray['password'] = 'Password is required!';
         }
-    
         if (empty($errorArray)) {
             if (!checkLoginCredentials($email, $password, $users)) {
                 $errorArray['credentials'] = 'Incorrect email or password!';
             }
-        }
-    
+        } 
         return $errorArray;
     }
 
     function displayErrors($errors) {
         if (empty($errors)) {
             return ''; 
-        }
-    
+        } 
         $output = '
         <div class="alert alert-danger alert-dismissible fade show mx-auto my-5" style="margin-bottom: 20px;" role="alert">
             <strong>System Errors:</strong> Please correct the following errors.
@@ -102,7 +91,6 @@
             $output .= '<li>' . htmlspecialchars($error) . '</li>';
         }
         $output .= '</ul></div>';
-    
         return $output;
     }
  
