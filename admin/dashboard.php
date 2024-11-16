@@ -4,6 +4,7 @@
 
     $pageTitle = "Dashboard";
     include './partials/header.php';
+    include './partials/side-bar.php';
 
 ?>
 
