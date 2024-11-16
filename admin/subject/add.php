@@ -16,8 +16,14 @@
         </nav>
         <div class="card p-3 mb-4">
             <form method="POST" class="p-4">
-                <input type="text" name="student_id" class="form-control mb-3" placeholder="Subject Code">
-                <input type="text" name="first_name" class="form-control mb-3" placeholder="Subject Name">
+                <div class="form-floating mb-3">
+                    <input type="text" name="student_id" class="form-control" id="subjectCode" placeholder="Subject Code">
+                    <label for="subjectCode">Subject Code</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="text" name="first_name" class="form-control" id="subjectName" placeholder="Subject Name">
+                    <label for="subjectName">Subject Name</label>
+                </div>
                 <button type="submit" class="btn btn-primary w-100 px-4">Add Subject</button>
             </form>
         </div>
