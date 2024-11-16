@@ -53,3 +53,5 @@
     </div>    
 </main>
 <!-- Template Files here -->
+
+<?php include './partials/footer.php'; ?>
