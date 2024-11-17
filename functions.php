@@ -39,6 +39,21 @@
         }
     }
 
+    function addSubject($code, $name) {
+        $con = openCon();
+        if ($con) {  
+            $sql = "INSERT INTO subjects (subject_code, subject_name) VALUES ('$code', '$name')";
+            if (mysqli_query($con, $sql)) {
+                //echo "New record created successfully";
+            } else {
+                echo "Error: " . $sql . "<br>" . mysqli_error($con);
+            }
+            closeCon($con);
+        } else {
+            echo "Failed to connect to the database.";
+        }
+    }
+
     function getUsers() {
         $con = openCon();       
         $sql = "SELECT email, password FROM users";
@@ -81,12 +96,11 @@
             return ''; 
         } 
         $output = '
-        <div class="alert alert-danger alert-dismissible fade show mx-auto my-5" style="margin-bottom: 20px;" role="alert">
+        <div class="alert alert-danger alert-dismissible fade show mx-auto my-3" style="margin-bottom: 20px;" role="alert">
             <strong>System Errors:</strong> Please correct the following errors.
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             <hr>
             <ul>';
-    
         foreach ($errors as $error) {
             $output .= '<li>' . htmlspecialchars($error) . '</li>';
         }
@@ -105,5 +119,121 @@
             exit();  
         }
     }
+
+    function validateSubjectData($subject_data, $isEdit = false) {
+        $errorArray = [];
+        if (!$isEdit && empty($subject_data['subject_code'])) {
+            $errorArray['subject_code'] = 'Subject code is required!';
+        }
+        if (empty($subject_data['subject_name'])) {
+            $errorArray['subject_name'] = 'Subject name is required!';
+        }
+        return $errorArray;
+    }
+
+    function checkDuplicateSubjectData($subject_data, $isEdit = false) {
+        $errors = [];
+        $con = openCon();
+        if ($con) {
+            $name = $subject_data['subject_name'];
+            $code = $isEdit ? null : $subject_data['subject_code'];
+            $sql = "SELECT * FROM subjects WHERE subject_name = ?";
+            if (!$isEdit) {
+                $sql .= " OR subject_code = ?";
+            }
+            $stmt = mysqli_prepare($con, $sql);
+            if (!$isEdit) {
+                mysqli_stmt_bind_param($stmt, "ss", $name, $code);
+            } else {
+                mysqli_stmt_bind_param($stmt, "s", $name);
+            }
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+            if ($result && mysqli_num_rows($result) > 0) {
+                while ($row = mysqli_fetch_assoc($result)) {
+                    if (!$isEdit && $row['subject_code'] == $code) {
+                        $errors[] = "A subject with this code already exists.";
+                    }
+                    if ($row['subject_name'] == $name) {
+                        $errors[] = "A subject with this name already exists.";
+                    }
+                }
+            }
+            mysqli_stmt_close($stmt);
+            closeCon($con);
+        } else {
+            $errors[] = "Failed to connect to the database.";
+        }
+        return $errors;
+    }
+
+    function updateSubject($code, $name) {
+        $con = openCon(); 
+        if ($con) { 
+            $sql = "UPDATE subjects SET subject_name = '$name' WHERE subject_code = '$code'";
+            if (mysqli_query($con, $sql)) {
+                echo 'Success';
+            } else {
+                echo "Error: " . $sql . "<br>" . mysqli_error($con);
+            }
+            closeCon($con); 
+        } else {
+            echo "Failed to connect to the database.";
+        }
+    }
+
+    function fetchSubjectDetails($subjectCode) {
+        $con = openCon(); // Open the database connection
+        $stmt = $con->prepare("SELECT * FROM subjects WHERE subject_code = ?");
+        $stmt->bind_param("s", $subjectCode);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+            $subject = $result->fetch_assoc();
+            $stmt->close();
+            closeCon($con); 
+            return $subject;
+        } else {
+            $stmt->close();
+            closeCon($con); 
+            return null;
+        }
+    }
+
+    function fetchSubjects() {
+        $con = openCon(); 
+        $result = $con->query("SELECT * FROM subjects");
+        $subjects = [];
+    
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $subjects[] = $row;
+            }
+        }
+        closeCon($con); 
+        return $subjects;
+    }
+
+    function deleteSubject($subjectCode) {
+        $con = openCon(); 
+        if ($con) {
+            $stmt = $con->prepare("DELETE FROM subjects WHERE subject_code = ?");
+            $stmt->bind_param("s", $subjectCode);
+            if ($stmt->execute()) {
+                
+            } else {
+                echo "Error: " . $stmt->error;
+            }
+            $stmt->close();
+            closeCon($con); 
+        } else {
+            echo "Failed to connect to the database.";
+        }
+    }
+
+
+    
+    
+
 
 ?>

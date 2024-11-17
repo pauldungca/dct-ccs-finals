@@ -15,7 +15,6 @@
         if (empty($errorArray)) {
             session_start();  
             $_SESSION['email'] = $email;  
-            //header("Location: ./admin/dashboard.php");  
             header('Location: ./admin/dashboard.php');
             exit();
         }

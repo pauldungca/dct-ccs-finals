@@ -1,7 +1,19 @@
 <?php 
     include '../../functions.php';
     guard();
-    $pageTitle = "Edit Subject";
+    $pageTitle = "Delete Subject";
+
+    if (isset($_GET['code'])) {
+        $subjectCode = $_GET['code'];
+        $subject = fetchSubjectDetails($subjectCode); 
+    }
+
+    if (isset($_POST['deleteButton'])) {
+        deleteSubject($subjectCode);
+        header("Location: /admin/subject/add.php");
+        exit();
+    }
+    
     include '../partials/header.php';
     include '../partials/side-bar.php'; 
 ?>
@@ -18,12 +30,12 @@
         <div class="card p-5 mb-4">
             <p>Are you sure you want to delete the following subject record?</p>
             <ul>
-                <li><strong>Subject Code: </strong>1001</li>
-                <li><strong>Subject Name: </strong>Math</li>
+                <li><strong>Subject Code: </strong><?php echo htmlspecialchars($subject['subject_code'] ?? ''); ?></li>
+                <li><strong>Subject Name: </strong><?php echo htmlspecialchars($subject['subject_name'] ?? ''); ?></li>
             </ul>
-            <form method="POST">
+            <form method="post">
                 <a href="./add.php" class="btn btn-secondary">Cancel</a>
-                <button type="submit" class="btn btn-primary">Delete Subject Record</button>
+                <button type="submit" name="deleteButton" class="btn btn-primary">Delete Subject Record</button>
             </form>
         </div>
     </main>
