@@ -1,5 +1,5 @@
 <?php 
-    $current_page = basename($_SERVER['PHP_SELF']);
+    $current_page = $_SERVER['REQUEST_URI'];
 ?>
 <div class="sidebar border border-right col-md-3 col-lg-2 p-0 bg-body-tertiary vh-100">
     <div class="offcanvas-md offcanvas-end bg-body-tertiary" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
@@ -10,19 +10,32 @@
         <div class="offcanvas-body d-md-flex flex-column p-0 pt-lg-3 overflow-y-auto">
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link d-flex align-items-center gap-2 <?php echo ($current_page == 'dashboard.php') ? 'fw-bold text-primary' : ''; ?>" href="/admin/dashboard.php">
+                    <a class="nav-link d-flex align-items-center gap-2 <?php echo (
+                        $current_page == '/admin/dashboard.php'
+                        ) ? 'fw-bold text-primary' : ''; ?>" href="/admin/dashboard.php">
                         <i class="fa-solid fa-gauge fa-fw me-2"></i>
                         Dashboard
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link d-flex align-items-center gap-2 <?php echo ($current_page == 'add.php') ? 'fw-bold text-primary' : ''; ?>" href="/admin/subject/add.php">
+                    <a class="nav-link d-flex align-items-center gap-2 <?php echo (
+                        $current_page == '/admin/subject/add.php' || 
+                        $current_page == '/admin/subject/delete.php' || 
+                        $current_page == '/admin/subject/edit.php'
+                        ) ? 'fw-bold text-primary' : ''; ?>" href="/admin/subject/add.php">
                     <i class="fa-solid fa-file fa-fw me-2"></i>
                         Subjects
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link d-flex align-items-center gap-2 <?php echo ($current_page == 'register.php') ? 'fw-bold text-primary' : ''; ?>" href="/admin/students/register.php">
+                    <a class="nav-link d-flex align-items-center gap-2 <?php echo (
+                        $current_page == '/admin/students/assign-grade.php' ||
+                        $current_page == '/admin/students/attach-subject.php' ||
+                        $current_page == '/admin/students/delete.php' ||
+                        $current_page == '/admin/students/dettach-subject.php' ||
+                        $current_page == '/admin/students/edit.php' ||
+                        $current_page == '/admin/students/register.php'
+                        ) ? 'fw-bold text-primary' : ''; ?>" href="/admin/students/register.php">
                         <i class="fa-solid fa-user fa-fw me-2"></i>
                         Students
                     </a>
