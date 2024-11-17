@@ -120,9 +120,9 @@
         }
     }
 
-    function validateSubjectData($subject_data) {
+    function validateSubjectData($subject_data, $isEdit = false) {
         $errorArray = [];
-        if (empty($subject_data['subject_code'])) {
+        if (!$isEdit && empty($subject_data['subject_code'])) {
             $errorArray['subject_code'] = 'Subject code is required!';
         }
         if (empty($subject_data['subject_name'])) {
@@ -131,24 +131,27 @@
         return $errorArray;
     }
 
-    function checkDuplicateSubjectData($subject_data) {
+    function checkDuplicateSubjectData($subject_data, $isEdit = false) {
         $errors = [];
         $con = openCon();
-    
         if ($con) {
-            $code = $subject_data['subject_code'];
             $name = $subject_data['subject_name'];
-    
-            // Query to check for duplicate subject code or name
-            $sql = "SELECT * FROM subjects WHERE subject_code = ? OR subject_name = ?";
+            $code = $isEdit ? null : $subject_data['subject_code'];
+            $sql = "SELECT * FROM subjects WHERE subject_name = ?";
+            if (!$isEdit) {
+                $sql .= " OR subject_code = ?";
+            }
             $stmt = mysqli_prepare($con, $sql);
-            mysqli_stmt_bind_param($stmt, "ss", $code, $name);
+            if (!$isEdit) {
+                mysqli_stmt_bind_param($stmt, "ss", $name, $code);
+            } else {
+                mysqli_stmt_bind_param($stmt, "s", $name);
+            }
             mysqli_stmt_execute($stmt);
             $result = mysqli_stmt_get_result($stmt);
-    
             if ($result && mysqli_num_rows($result) > 0) {
                 while ($row = mysqli_fetch_assoc($result)) {
-                    if ($row['subject_code'] == $code) {
+                    if (!$isEdit && $row['subject_code'] == $code) {
                         $errors[] = "A subject with this code already exists.";
                     }
                     if ($row['subject_name'] == $name) {
@@ -156,33 +159,65 @@
                     }
                 }
             }
-    
             mysqli_stmt_close($stmt);
             closeCon($con);
         } else {
             $errors[] = "Failed to connect to the database.";
         }
-    
         return $errors;
     }
 
-    function fetchSubjects() {
-        $subjects = [];
-        $con = openCon();
-        if ($con) {
-            $result = mysqli_query($con, "SELECT * FROM subjects");
-            if ($result) {
-                while ($row = mysqli_fetch_assoc($result)) {
-                    $subjects[] = $row;
-                }
+    function updateSubject($code, $name) {
+        $con = openCon(); 
+        if ($con) { 
+            $sql = "UPDATE subjects SET subject_name = '$name' WHERE subject_code = '$code'";
+            if (mysqli_query($con, $sql)) {
+                echo 'Success';
+            } else {
+                echo "Error: " . $sql . "<br>" . mysqli_error($con);
             }
-            closeCon($con);
+            closeCon($con); 
         } else {
             echo "Failed to connect to the database.";
         }
+    }
+
+    function fetchSubjectDetails($subjectCode) {
+        $con = openCon(); // Open the database connection
+        $stmt = $con->prepare("SELECT * FROM subjects WHERE subject_code = ?");
+        $stmt->bind_param("s", $subjectCode);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+            $subject = $result->fetch_assoc();
+            $stmt->close();
+            closeCon($con); 
+            return $subject;
+        } else {
+            $stmt->close();
+            closeCon($con); 
+            return null;
+        }
+    }
+
+    function fetchSubjects() {
+        $con = openCon(); 
+        $result = $con->query("SELECT * FROM subjects");
+        $subjects = [];
+    
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $subjects[] = $row;
+            }
+        }
+    
+        closeCon($con); 
         return $subjects;
     }
 
+
+    
+    
 
 
 ?>

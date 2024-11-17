@@ -16,12 +16,12 @@
         $errorArray = validateSubjectData([
             'subject_code' => $code,
             'subject_name' => $name
-        ]);
+        ], false);
 
         $duplicateErrors = checkDuplicateSubjectData([
             'subject_code' => $code,
             'subject_name' => $name
-        ]);
+        ], false);
 
         $errorArray = array_merge($errorArray, $duplicateErrors);
 
@@ -32,7 +32,6 @@
         }
     }
 
-    $subjects = fetchSubjects();
 ?>
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-5">
@@ -58,7 +57,7 @@
             </form>
         </div>
         <div class="card p-5 mb-4">
-            <h4>Student List</h4>
+            <h4>Subject List</h4>
             <table class="table">
                 <thead>
                     <tr>
@@ -67,6 +66,9 @@
                         <th>Option</th>
                     </tr>
                 </thead>
+                <?php 
+                $subjects = fetchSubjects(); 
+                ?>
                 <tbody>
                     <?php if (!empty($subjects)): ?>
                         <?php foreach ($subjects as $subject): ?>
@@ -74,8 +76,8 @@
                                 <td><?php echo htmlspecialchars($subject['subject_code']); ?></td>
                                 <td><?php echo htmlspecialchars($subject['subject_name']); ?></td>
                                 <td>
-                                    <a href="./edit.php?id=<?php echo $subject['id']; ?>" class="btn btn-info btn-sm">Edit</a>
-                                    <a href="./delete.php?id=<?php echo $subject['id']; ?>" class="btn btn-danger btn-sm">Delete</a>
+                                    <a href="edit.php?code=<?php echo urlencode($subject['subject_code']); ?>" class="btn btn-info btn-sm">Edit</a>
+                                    <a href="delete.php?code=<?php echo urlencode($subject['subject_code']); ?>" class="btn btn-danger btn-sm">Delete</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -84,7 +86,7 @@
                             <td colspan="3" class="text-center">No subjects found.</td>
                         </tr>
                     <?php endif; ?>
-            </tbody>
+                </tbody>
             </table>
         </div>
     </main>
