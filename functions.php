@@ -210,9 +210,25 @@
                 $subjects[] = $row;
             }
         }
-    
         closeCon($con); 
         return $subjects;
+    }
+
+    function deleteSubject($subjectCode) {
+        $con = openCon(); 
+        if ($con) {
+            $stmt = $con->prepare("DELETE FROM subjects WHERE subject_code = ?");
+            $stmt->bind_param("s", $subjectCode);
+            if ($stmt->execute()) {
+                
+            } else {
+                echo "Error: " . $stmt->error;
+            }
+            $stmt->close();
+            closeCon($con); 
+        } else {
+            echo "Failed to connect to the database.";
+        }
     }
 
 

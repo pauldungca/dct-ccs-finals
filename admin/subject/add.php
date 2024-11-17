@@ -58,7 +58,7 @@
         </div>
         <div class="card p-5 mb-4">
             <h4>Subject List</h4>
-            <table class="table">
+            <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>Subject Code</th>
