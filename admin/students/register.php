@@ -33,7 +33,7 @@
         </div>
         <div class="card p-5 mb-4">
             <h4>Student List</h4>
-            <table class="table">
+            <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>Student ID</th>
@@ -49,7 +49,7 @@
                         <td>Doe</td>
                         <td>
                             <a href="./edit.php" class="btn btn-info btn-sm">Edit</a>
-                            <a href="#" class="btn btn-danger btn-sm">Delete</a>
+                            <a href="./delete.php" class="btn btn-danger btn-sm">Delete</a>
                             <a href="#" class="btn btn-warning btn-sm">Attach Subject</a>
                         </td>
                     </tr>
