@@ -111,10 +111,10 @@
                         <tr>
                             <td><?php echo htmlspecialchars($subject['subject_code']); ?></td>
                             <td><?php echo htmlspecialchars($subject['subject_name']); ?></td>
-                            <td><?php echo htmlspecialchars($subject['grade'] ?: '0.00'); ?></td>
+                            <td><?php echo htmlspecialchars($subject['grade']); ?></td>
                             <td>
                             <a href="./dettach-subject.php?id=<?php echo urlencode($student['student_id']); ?>&code=<?php echo urlencode($subject['subject_code']); ?>" class="btn btn-danger btn-sm">Detach Subject</a>
-                            <a href="./dettach-subject.php?id=<?php echo urlencode($student['student_id']); ?>&code=<?php echo urlencode($subject['subject_code']); ?>" class="btn btn-success btn-sm">Assign Grade</a>
+                            <a href="./assign-grade.php?id=<?php echo urlencode($student['student_id']); ?>&code=<?php echo urlencode($subject['subject_code']); ?>&grade=<?php echo htmlspecialchars($subject['grade']); ?>" class="btn btn-success btn-sm">Assign Grade</a>
                             </td>
                         </tr>
                     <?php 

@@ -33,7 +33,7 @@
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="../dashboard.php">Dashboard</a></li>
             <li class="breadcrumb-item"><a href="./register.php">Register Student</a></li>
-            <li class="breadcrumb-item"><a href="./attach-subject.php">Attach Subject to Student</a></li>
+            <li class="breadcrumb-item"><a href="./attach-subject.php?id=<?php echo urlencode($student['student_id']); ?>">Attach Subject to Student</a></li>
             <li class="breadcrumb-item active" aria-current="page">Dettach Subject from Student</li>
         </ol>
     </nav>

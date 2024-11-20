@@ -466,4 +466,64 @@
         }
     }
 
+    function assignGradeToSubject($studentId, $subjectCode, $grade) {
+        $con = openCon();
+        if ($con) {
+            // First, get the subject ID using the subject code
+            $stmt = $con->prepare("SELECT id FROM subjects WHERE subject_code = ?");
+            $stmt->bind_param("s", $subjectCode);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $subject = $result->fetch_assoc();
+            
+            if ($subject) {
+                $subjectId = $subject['id'];
+                
+                // Check if the student is already assigned to this subject
+                $checkStmt = $con->prepare("SELECT * FROM students_subjects WHERE student_id = ? AND subject_id = ?");
+                $checkStmt->bind_param("ii", $studentId, $subjectId);
+                $checkStmt->execute();
+                $checkResult = $checkStmt->get_result();
+                
+                if ($checkResult->num_rows > 0) {
+                    // Update the grade if the subject is already assigned to the student
+                    $updateStmt = $con->prepare("UPDATE students_subjects SET grade = ? WHERE student_id = ? AND subject_id = ?");
+                    $updateStmt->bind_param("dii", $grade, $studentId, $subjectId);
+                    $updateStmt->execute();
+                    $updateStmt->close();
+                } else {
+                    // Otherwise, insert a new record for this student and subject
+                    $insertStmt = $con->prepare("INSERT INTO students_subjects (student_id, subject_id, grade) VALUES (?, ?, ?)");
+                    $insertStmt->bind_param("iid", $studentId, $subjectId, $grade);
+                    $insertStmt->execute();
+                    $insertStmt->close();
+                }
+                
+                $checkStmt->close();
+            }
+            $stmt->close();
+            closeCon($con);
+        } else {
+            echo "Failed to connect to the database.";
+        }
+    }
+
+    function fetchGrade($studentId, $subjectCode) {
+        $con = openCon();  // Open the database connection
+        
+        // Simple query to fetch the grade for the specific student and subject
+        $query = "SELECT grade FROM students_subjects WHERE student_id = '$studentId' AND subject_id = '$subjectCode'";
+        
+        // Execute the query
+        $result = $con->query($query);
+        
+        // Directly fetch the grade if a result is returned
+        $grade = ($result && $result->num_rows > 0) ? $result->fetch_assoc()['grade'] : null;
+    
+        closeCon($con);  // Close the database connection
+        return $grade;
+    }
+    
+    
+    
 ?>
