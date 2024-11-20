@@ -214,8 +214,7 @@
     function fetchSubjects() {
         $con = openCon(); 
         $result = $con->query("SELECT * FROM subjects");
-        $subjects = [];
-    
+        $subjects = [];  
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
                 $subjects[] = $row;
@@ -230,8 +229,7 @@
         if ($con) {
             $stmt = $con->prepare("DELETE FROM subjects WHERE subject_code = ?");
             $stmt->bind_param("s", $subjectCode);
-            if ($stmt->execute()) {
-                
+            if ($stmt->execute()) { 
             } else {
                 echo "Error: " . $stmt->error;
             }
@@ -242,9 +240,74 @@
         }
     }
 
+    function fetchStudents() {
+        $con = openCon(); 
+        $result = $con->query("SELECT * FROM students");
+        $students = [];
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $students[] = $row;
+            }
+        }
+        closeCon($con); 
+        return $students;
+    }
 
-    
-    
+    function addStudent($id, $firstName, $lastName) {
+        $con = openCon();
+        if ($con) {
+            $sql = "INSERT INTO students (student_id, first_name, last_name) VALUES ('$id', '$firstName', '$lastName')";
+            if (mysqli_query($con, $sql)) {
+                //echo "New record created successfully";
+            } else {
+                echo "Error: " . $sql . "<br>" . mysqli_error($con);
+            }
+            closeCon($con);
+        } else {
+            echo "Failed to connect to the database.";
+        }
+    }
 
+    function validateStudentData($student_data, $isEdit = false) {
+        $errorArray = [];
+        if (!$isEdit && empty($student_data['student_id'])) {
+            $errorArray['student_id'] = 'Student ID is required!';
+        }
+        if (empty($student_data['first_name'])) {
+            $errorArray['first_name'] = 'First name is required!';
+        }
+        if (empty($student_data['last_name'])) {
+            $errorArray['last_name'] = 'Last name is required!';
+        }
+        return $errorArray;
+    }
+
+    function checkDuplicateStudentData($student_data, $isEdit = false) {
+        $errors = [];
+        $con = openCon();
+        if ($con) {
+            $id = $student_data['student_id'];
+            $sql = "SELECT * FROM students WHERE student_id = ?";
+            
+            $stmt = mysqli_prepare($con, $sql);
+            mysqli_stmt_bind_param($stmt, "s", $id);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+    
+            if ($result && mysqli_num_rows($result) > 0) {
+                while ($row = mysqli_fetch_assoc($result)) {
+                    if (!$isEdit && $row['student_id'] == $id) {
+                        $errors[] = "A student with this ID already exists.";
+                    }
+                }
+            }
+    
+            mysqli_stmt_close($stmt);
+            closeCon($con);
+        } else {
+            $errors[] = "Failed to connect to the database.";
+        }
+        return $errors;
+    }
 
 ?>
