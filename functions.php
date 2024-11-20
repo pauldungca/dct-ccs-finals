@@ -310,4 +310,38 @@
         return $errors;
     }
 
+    function fetchStudentDetails($studentId) {
+        $con = openCon(); // Open the database connection
+        $stmt = $con->prepare("SELECT * FROM students WHERE student_id = ?");
+        $stmt->bind_param("s", $studentId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    
+        if ($result->num_rows > 0) {
+            $student = $result->fetch_assoc();
+            $stmt->close();
+            closeCon($con); 
+            return $student;
+        } else {
+            $stmt->close();
+            closeCon($con); 
+            return null;
+        }
+    }
+
+    function updateStudent($studentId, $firstName, $lastName) {
+        $con = openCon(); 
+        if ($con) { 
+            $sql = "UPDATE students SET first_name = '$firstName', last_name = '$lastName' WHERE student_id = '$studentId'";
+            if (mysqli_query($con, $sql)) {
+                //echo 'Success';
+            } else {
+                echo "Error: " . $sql . "<br>" . mysqli_error($con);
+            }
+            closeCon($con); 
+        } else {
+            echo "Failed to connect to the database.";
+        }
+    }
+
 ?>

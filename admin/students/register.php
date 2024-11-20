@@ -13,26 +13,20 @@
         $firstName = $_POST['studentFNameText'];
         $lastName = $_POST['studentLNameText'];
 
-        // Validate the student data
         $errorArray = validateStudentData([
             'student_id' => $studId,
             'first_name' => $firstName,
             'last_name' => $lastName
         ], false);
 
-        // Check for duplicate student ID
         $duplicateErrors = checkDuplicateStudentData([
             'student_id' => $studId
         ], false);
 
-        // Merge validation and duplication errors
         $errorArray = array_merge($errorArray, $duplicateErrors);
 
-        // If no errors, add the student
         if (empty($errorArray)) {
             addStudent($studId, $firstName, $lastName);
-
-            // Reset form fields
             $studId = "";
             $firstName = "";
             $lastName = "";
