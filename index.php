@@ -1,6 +1,7 @@
 <?php 
 
     include './functions.php';
+    guard();
 
     $email = "";
     $password = "";

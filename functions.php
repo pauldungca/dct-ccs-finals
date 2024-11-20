@@ -112,11 +112,22 @@
         return 'http://dct-ccs-finals.test/';
     }
 
-    function guard() { 
-        if (!isset($_SESSION['email'])) {
+    function guard() {
+        // Check if the user is logged in
+        $isLoggedIn = isset($_SESSION['email']);
+        $currentFile = basename($_SERVER['PHP_SELF']);
+        $isInAdmin = strpos($_SERVER['PHP_SELF'], '/admin/') !== false;
+    
+        // Case 1: If the user is logged in and trying to access index.php, redirect to the dashboard
+        if ($isLoggedIn && $currentFile === 'index.php' && !$isInAdmin) {
+            header("Location: " . getBaseURL() . "admin/dashboard.php");
+            exit();
+        }
+    
+        // Case 2: If not logged in and trying to access any page inside the admin folder, redirect to index.php
+        else if (!$isLoggedIn && $isInAdmin) {
             header("Location: " . getBaseURL() . "index.php");
-            session_destroy();
-            exit();  
+            exit();
         }
     }
 
