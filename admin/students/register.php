@@ -45,25 +45,14 @@
                 <tbody>
                     <tr>
                         <td>2021001</td>
-                        <td>John Doe</td>
-                        <td>john.doe@example.com</td>
+                        <td>John</td>
+                        <td>Doe</td>
                         <td>
-                            <button class="btn btn-info btn-sm">Edit</button>
-                            <button class="btn btn-danger btn-sm">Delete</button>
-                            <button class="btn btn-warning btn-sm">Attach Subject</button>
+                            <a href="./edit.php" class="btn btn-info btn-sm">Edit</a>
+                            <a href="#" class="btn btn-danger btn-sm">Delete</a>
+                            <a href="#" class="btn btn-warning btn-sm">Attach Subject</a>
                         </td>
                     </tr>
-                    <tr>
-                        <td>2021002</td>
-                        <td>Jane Smith</td>
-                        <td>jane.smith@example.com</td>
-                        <td>
-                            <button class="btn btn-info btn-sm">Edit</button>
-                            <button class="btn btn-danger btn-sm">Delete</button>
-                            <button class="btn btn-warning btn-sm">Attach Subject</button>
-                        </td>
-                    </tr>
-                    <!-- Additional rows can be populated dynamically -->
                 </tbody>
             </table>
         </div>
