@@ -2,6 +2,18 @@
     include '../../functions.php';
     guard();
     $pageTitle = "Delete Student";
+
+    if (isset($_GET['id'])) {
+        $studentId = $_GET['id'];
+        $student = fetchStudentDetails($studentId); 
+    }
+
+    if (isset($_POST['deleteButton'])) {
+        deleteStudent($studentId);
+        header("Location: /admin/students/register.php");
+        exit();
+    }
+
     include '../partials/header.php';
     include '../partials/side-bar.php';  
 ?>
@@ -18,9 +30,9 @@
         <div class="card p-5 mb-4">
             <p>Are you sure you want to delete the following student record?</p>
             <ul>
-                <li><strong>Student ID: </strong></li>
-                <li><strong>First Name: </strong></li>
-                <li><strong>Last Name: </strong></li>
+                <li><strong>Student ID: </strong><?php echo htmlspecialchars($student['student_id'] ?? ''); ?></li>
+                <li><strong>First Name: </strong><?php echo htmlspecialchars($student['first_name'] ?? ''); ?></li>
+                <li><strong>Last Name: </strong><?php echo htmlspecialchars($student['last_name'] ?? ''); ?></li>
             </ul>
             <form method="post">
                 <a href="./register.php" class="btn btn-secondary">Cancel</a>

@@ -344,4 +344,22 @@
         }
     }
 
+    function deleteStudent($studentId) {
+        $con = openCon(); 
+        if ($con) {
+            $stmt = $con->prepare("DELETE FROM students WHERE student_id = ?");
+            $stmt->bind_param("s", $studentId);
+            if ($stmt->execute()) {
+               // echo "Student deleted successfully.";
+            } else {
+                echo "Error: " . $stmt->error;
+            }
+            $stmt->close();
+            closeCon($con); 
+        } else {
+            echo "Failed to connect to the database.";
+        }
+    }
+    
+
 ?>
