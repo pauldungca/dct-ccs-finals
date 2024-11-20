@@ -214,8 +214,7 @@
     function fetchSubjects() {
         $con = openCon(); 
         $result = $con->query("SELECT * FROM subjects");
-        $subjects = [];
-    
+        $subjects = [];  
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
                 $subjects[] = $row;
@@ -230,8 +229,7 @@
         if ($con) {
             $stmt = $con->prepare("DELETE FROM subjects WHERE subject_code = ?");
             $stmt->bind_param("s", $subjectCode);
-            if ($stmt->execute()) {
-                
+            if ($stmt->execute()) { 
             } else {
                 echo "Error: " . $stmt->error;
             }
@@ -242,9 +240,290 @@
         }
     }
 
+    function fetchStudents() {
+        $con = openCon(); 
+        $result = $con->query("SELECT * FROM students");
+        $students = [];
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $students[] = $row;
+            }
+        }
+        closeCon($con); 
+        return $students;
+    }
 
+    function addStudent($id, $firstName, $lastName) {
+        $con = openCon();
+        if ($con) {
+            $sql = "INSERT INTO students (student_id, first_name, last_name) VALUES ('$id', '$firstName', '$lastName')";
+            if (mysqli_query($con, $sql)) {
+                //echo "New record created successfully";
+            } else {
+                echo "Error: " . $sql . "<br>" . mysqli_error($con);
+            }
+            closeCon($con);
+        } else {
+            echo "Failed to connect to the database.";
+        }
+    }
+
+    function validateStudentData($student_data, $isEdit = false) {
+        $errorArray = [];
+        if (!$isEdit && empty($student_data['student_id'])) {
+            $errorArray['student_id'] = 'Student ID is required!';
+        }
+        if (empty($student_data['first_name'])) {
+            $errorArray['first_name'] = 'First name is required!';
+        }
+        if (empty($student_data['last_name'])) {
+            $errorArray['last_name'] = 'Last name is required!';
+        }
+        return $errorArray;
+    }
+
+    function checkDuplicateStudentData($student_data, $isEdit = false) {
+        $errors = [];
+        $con = openCon();
+        if ($con) {
+            $id = $student_data['student_id'];
+            $sql = "SELECT * FROM students WHERE student_id = ?";
+            
+            $stmt = mysqli_prepare($con, $sql);
+            mysqli_stmt_bind_param($stmt, "s", $id);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+    
+            if ($result && mysqli_num_rows($result) > 0) {
+                while ($row = mysqli_fetch_assoc($result)) {
+                    if (!$isEdit && $row['student_id'] == $id) {
+                        $errors[] = "A student with this ID already exists.";
+                    }
+                }
+            }
+    
+            mysqli_stmt_close($stmt);
+            closeCon($con);
+        } else {
+            $errors[] = "Failed to connect to the database.";
+        }
+        return $errors;
+    }
+
+    function fetchStudentDetails($studentId) {
+        $con = openCon(); // Open the database connection
+        $stmt = $con->prepare("SELECT * FROM students WHERE student_id = ?");
+        $stmt->bind_param("s", $studentId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    
+        if ($result->num_rows > 0) {
+            $student = $result->fetch_assoc();
+            $stmt->close();
+            closeCon($con); 
+            return $student;
+        } else {
+            $stmt->close();
+            closeCon($con); 
+            return null;
+        }
+    }
+
+    function updateStudent($studentId, $firstName, $lastName) {
+        $con = openCon(); 
+        if ($con) { 
+            $sql = "UPDATE students SET first_name = '$firstName', last_name = '$lastName' WHERE student_id = '$studentId'";
+            if (mysqli_query($con, $sql)) {
+                //echo 'Success';
+            } else {
+                echo "Error: " . $sql . "<br>" . mysqli_error($con);
+            }
+            closeCon($con); 
+        } else {
+            echo "Failed to connect to the database.";
+        }
+    }
+
+    function deleteStudent($studentId) {
+        $con = openCon(); 
+        if ($con) {
+            $stmt = $con->prepare("DELETE FROM students WHERE student_id = ?");
+            $stmt->bind_param("s", $studentId);
+            if ($stmt->execute()) {
+               // echo "Student deleted successfully.";
+            } else {
+                echo "Error: " . $stmt->error;
+            }
+            $stmt->close();
+            closeCon($con); 
+        } else {
+            echo "Failed to connect to the database.";
+        }
+    }
+
+    function attachSubjectToStudent($studentId, $subjectId) {
+        $defaultGrade = 0.00; // Default grade value
+        $con = openCon(); // Ensure database connection is open
+        if ($con) {
+            // Prepare the SQL statement
+            $stmt = $con->prepare("INSERT INTO students_subjects (student_id, subject_id, grade) VALUES (?, ?, ?)");
+            if ($stmt) {
+                // Bind parameters (two integers and a float)
+                $stmt->bind_param("iid", $studentId, $subjectId, $defaultGrade);
+    
+                // Execute the statement and check for errors
+                if (!$stmt->execute()) {
+                    echo "Error attaching subject: " . $stmt->error;
+                }
+    
+                // Close the statement
+                $stmt->close();
+            } else {
+                echo "Error preparing statement: " . $con->error;
+            }
+    
+            // Close the database connection
+            closeCon($con);
+        } else {
+            echo "Failed to connect to the database.";
+        }
+    }
+
+    // Fetch attached subjects with their details
+    function fetchStudentSubjects($studentId) {
+        $con = openCon();
+        $subjects = [];
+        if ($con) {
+            $stmt = $con->prepare("
+                SELECT s.subject_code, s.subject_name, ss.grade, ss.subject_id
+                FROM students_subjects ss
+                JOIN subjects s ON ss.subject_id = s.id
+                WHERE ss.student_id = ?");
+            $stmt->bind_param("i", $studentId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            while ($row = $result->fetch_assoc()) {
+                $subjects[] = $row;
+            }
+
+            $stmt->close();
+            closeCon($con);
+        }
+        return $subjects;
+    }
+
+    // Fetch the attached subject IDs for the student
+    function fetchAttachedSubjectIds($studentId) {
+        $con = openCon();
+        $attachedSubjects = [];
+        if ($con) {
+            $stmt = $con->prepare("SELECT subject_id FROM students_subjects WHERE student_id = ?");
+            $stmt->bind_param("i", $studentId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            while ($row = $result->fetch_assoc()) {
+                $attachedSubjects[] = $row['subject_id'];
+            }
+
+            $stmt->close();
+            closeCon($con);
+        }
+        return $attachedSubjects;
+    }
+
+    function dettachSubjectFromStudent($studentId, $subjectCode) {
+        $con = openCon();
+        if ($con) {
+            // First, get the subject ID using the subject code
+            $stmt = $con->prepare("SELECT id FROM subjects WHERE subject_code = ?");
+            $stmt->bind_param("s", $subjectCode);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $subject = $result->fetch_assoc();
+            
+            if ($subject) {
+                $subjectId = $subject['id'];
+                
+                // Now, delete the record from the pivot table
+                $deleteStmt = $con->prepare("DELETE FROM students_subjects WHERE student_id = ? AND subject_id = ?");
+                $deleteStmt->bind_param("ii", $studentId, $subjectId);
+                $deleteStmt->execute();
+                
+                if ($deleteStmt->affected_rows > 0) {
+                    echo "Subject detached successfully.";
+                } else {
+                    echo "Error detaching subject.";
+                }
+                
+                $deleteStmt->close();
+            }
+            $stmt->close();
+            closeCon($con);
+        } else {
+            echo "Failed to connect to the database.";
+        }
+    }
+
+    function assignGradeToSubject($studentId, $subjectCode, $grade) {
+        $con = openCon();
+        if ($con) {
+            // First, get the subject ID using the subject code
+            $stmt = $con->prepare("SELECT id FROM subjects WHERE subject_code = ?");
+            $stmt->bind_param("s", $subjectCode);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $subject = $result->fetch_assoc();
+            
+            if ($subject) {
+                $subjectId = $subject['id'];
+                
+                // Check if the student is already assigned to this subject
+                $checkStmt = $con->prepare("SELECT * FROM students_subjects WHERE student_id = ? AND subject_id = ?");
+                $checkStmt->bind_param("ii", $studentId, $subjectId);
+                $checkStmt->execute();
+                $checkResult = $checkStmt->get_result();
+                
+                if ($checkResult->num_rows > 0) {
+                    // Update the grade if the subject is already assigned to the student
+                    $updateStmt = $con->prepare("UPDATE students_subjects SET grade = ? WHERE student_id = ? AND subject_id = ?");
+                    $updateStmt->bind_param("dii", $grade, $studentId, $subjectId);
+                    $updateStmt->execute();
+                    $updateStmt->close();
+                } else {
+                    // Otherwise, insert a new record for this student and subject
+                    $insertStmt = $con->prepare("INSERT INTO students_subjects (student_id, subject_id, grade) VALUES (?, ?, ?)");
+                    $insertStmt->bind_param("iid", $studentId, $subjectId, $grade);
+                    $insertStmt->execute();
+                    $insertStmt->close();
+                }
+                
+                $checkStmt->close();
+            }
+            $stmt->close();
+            closeCon($con);
+        } else {
+            echo "Failed to connect to the database.";
+        }
+    }
+
+    function fetchGrade($studentId, $subjectCode) {
+        $con = openCon();  // Open the database connection
+        
+        // Simple query to fetch the grade for the specific student and subject
+        $query = "SELECT grade FROM students_subjects WHERE student_id = '$studentId' AND subject_id = '$subjectCode'";
+        
+        // Execute the query
+        $result = $con->query($query);
+        
+        // Directly fetch the grade if a result is returned
+        $grade = ($result && $result->num_rows > 0) ? $result->fetch_assoc()['grade'] : null;
+    
+        closeCon($con);  // Close the database connection
+        return $grade;
+    }
     
     
-
-
+    
 ?>
