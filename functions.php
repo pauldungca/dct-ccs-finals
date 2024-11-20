@@ -360,6 +360,80 @@
             echo "Failed to connect to the database.";
         }
     }
+
+    function attachSubjectToStudent($studentId, $subjectId) {
+        $defaultGrade = 0.00; // Default grade value
+        $con = openCon(); // Ensure database connection is open
+        if ($con) {
+            // Prepare the SQL statement
+            $stmt = $con->prepare("INSERT INTO students_subjects (student_id, subject_id, grade) VALUES (?, ?, ?)");
+            if ($stmt) {
+                // Bind parameters (two integers and a float)
+                $stmt->bind_param("iid", $studentId, $subjectId, $defaultGrade);
+    
+                // Execute the statement and check for errors
+                if (!$stmt->execute()) {
+                    echo "Error attaching subject: " . $stmt->error;
+                }
+    
+                // Close the statement
+                $stmt->close();
+            } else {
+                echo "Error preparing statement: " . $con->error;
+            }
+    
+            // Close the database connection
+            closeCon($con);
+        } else {
+            echo "Failed to connect to the database.";
+        }
+    }
+
+    // Fetch attached subjects with their details
+    function fetchStudentSubjects($studentId) {
+        $con = openCon();
+        $subjects = [];
+        if ($con) {
+            $stmt = $con->prepare("
+                SELECT s.subject_code, s.subject_name, ss.grade, ss.subject_id
+                FROM students_subjects ss
+                JOIN subjects s ON ss.subject_id = s.id
+                WHERE ss.student_id = ?");
+            $stmt->bind_param("i", $studentId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            while ($row = $result->fetch_assoc()) {
+                $subjects[] = $row;
+            }
+
+            $stmt->close();
+            closeCon($con);
+        }
+        return $subjects;
+    }
+
+    // Fetch the attached subject IDs for the student
+    function fetchAttachedSubjectIds($studentId) {
+        $con = openCon();
+        $attachedSubjects = [];
+        if ($con) {
+            $stmt = $con->prepare("SELECT subject_id FROM students_subjects WHERE student_id = ?");
+            $stmt->bind_param("i", $studentId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            while ($row = $result->fetch_assoc()) {
+                $attachedSubjects[] = $row['subject_id'];
+            }
+
+            $stmt->close();
+            closeCon($con);
+        }
+        return $attachedSubjects;
+    }
+
+    
     
 
 ?>
