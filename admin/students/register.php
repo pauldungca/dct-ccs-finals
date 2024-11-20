@@ -50,7 +50,7 @@
                         <td>
                             <a href="./edit.php" class="btn btn-info btn-sm">Edit</a>
                             <a href="./delete.php" class="btn btn-danger btn-sm">Delete</a>
-                            <a href="#" class="btn btn-warning btn-sm">Attach Subject</a>
+                            <a href="./attach-subject.php" class="btn btn-warning btn-sm">Attach Subject</a>
                         </td>
                     </tr>
                 </tbody>
