@@ -21,6 +21,29 @@
         return mysqli_close($con);
     }
 
+    function getBaseURL() {
+        return 'http://dct-ccs-finals.test/';
+    }
+
+    function guard() {
+        // Check if the user is logged in
+        $isLoggedIn = isset($_SESSION['email']);
+        $currentFile = basename($_SERVER['PHP_SELF']);
+        $isInAdmin = strpos($_SERVER['PHP_SELF'], '/admin/') !== false;
+    
+        // Case 1: If the user is logged in and trying to access index.php, redirect to the dashboard
+        if ($isLoggedIn && $currentFile === 'index.php' && !$isInAdmin) {
+            header("Location: " . getBaseURL() . "admin/dashboard.php");
+            exit();
+        }
+    
+        // Case 2: If not logged in and trying to access any page inside the admin folder, redirect to index.php
+        else if (!$isLoggedIn && $isInAdmin) {
+            header("Location: " . getBaseURL() . "index.php");
+            exit();
+        }
+    }
+
     function addUser() {
         $con = openCon();
         if ($con) {
@@ -30,21 +53,6 @@
             $sql = "INSERT INTO users (email, password, name) VALUES ('$email', '$hashedPassword', '$name')";
             if (mysqli_query($con, $sql)) {
                 echo "New record created successfully";
-            } else {
-                echo "Error: " . $sql . "<br>" . mysqli_error($con);
-            }
-            closeCon($con);
-        } else {
-            echo "Failed to connect to the database.";
-        }
-    }
-
-    function addSubject($code, $name) {
-        $con = openCon();
-        if ($con) {  
-            $sql = "INSERT INTO subjects (subject_code, subject_name) VALUES ('$code', '$name')";
-            if (mysqli_query($con, $sql)) {
-                //echo "New record created successfully";
             } else {
                 echo "Error: " . $sql . "<br>" . mysqli_error($con);
             }
@@ -107,27 +115,19 @@
         $output .= '</ul></div>';
         return $output;
     }
- 
-    function getBaseURL() {
-        return 'http://dct-ccs-finals.test/';
-    }
 
-    function guard() {
-        // Check if the user is logged in
-        $isLoggedIn = isset($_SESSION['email']);
-        $currentFile = basename($_SERVER['PHP_SELF']);
-        $isInAdmin = strpos($_SERVER['PHP_SELF'], '/admin/') !== false;
-    
-        // Case 1: If the user is logged in and trying to access index.php, redirect to the dashboard
-        if ($isLoggedIn && $currentFile === 'index.php' && !$isInAdmin) {
-            header("Location: " . getBaseURL() . "admin/dashboard.php");
-            exit();
-        }
-    
-        // Case 2: If not logged in and trying to access any page inside the admin folder, redirect to index.php
-        else if (!$isLoggedIn && $isInAdmin) {
-            header("Location: " . getBaseURL() . "index.php");
-            exit();
+    function addSubject($code, $name) {
+        $con = openCon();
+        if ($con) {  
+            $sql = "INSERT INTO subjects (subject_code, subject_name) VALUES ('$code', '$name')";
+            if (mysqli_query($con, $sql)) {
+                //echo "New record created successfully";
+            } else {
+                echo "Error: " . $sql . "<br>" . mysqli_error($con);
+            }
+            closeCon($con);
+        } else {
+            echo "Failed to connect to the database.";
         }
     }
 

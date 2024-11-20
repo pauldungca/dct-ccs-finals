@@ -15,16 +15,25 @@
             </ol>
         </nav>
         <div class="card p-3 mb-4">
-            <form method="POST" class="p-4">
-                <input type="text" name="student_id" class="form-control mb-3" placeholder="Student ID">
-                <input type="text" name="first_name" class="form-control mb-3" placeholder="First Name">
-                <input type="text" name="last_name" class="form-control mb-3" placeholder="Last Name">
+            <form method="post" class="p-4">
+                <div class="form-floating mb-3">
+                    <input type="text" name="student_id" class="form-control" id="student_id" placeholder="Student ID">
+                    <label for="student_id">Student ID</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="text" name="first_name" class="form-control" id="first_name" placeholder="First Name">
+                    <label for="first_name">First Name</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="text" name="last_name" class="form-control" id="last_name" placeholder="Last Name">
+                    <label for="last_name">Last Name</label>
+                </div>
                 <button type="submit" class="btn btn-primary w-100 px-4">Add Student</button>
             </form>
         </div>
         <div class="card p-5 mb-4">
             <h4>Student List</h4>
-            <table class="table">
+            <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>Student ID</th>
@@ -36,25 +45,14 @@
                 <tbody>
                     <tr>
                         <td>2021001</td>
-                        <td>John Doe</td>
-                        <td>john.doe@example.com</td>
+                        <td>John</td>
+                        <td>Doe</td>
                         <td>
-                            <button class="btn btn-info btn-sm">Edit</button>
-                            <button class="btn btn-danger btn-sm">Delete</button>
-                            <button class="btn btn-warning btn-sm">Attach Subject</button>
+                            <a href="./edit.php" class="btn btn-info btn-sm">Edit</a>
+                            <a href="./delete.php" class="btn btn-danger btn-sm">Delete</a>
+                            <a href="./attach-subject.php" class="btn btn-warning btn-sm">Attach Subject</a>
                         </td>
                     </tr>
-                    <tr>
-                        <td>2021002</td>
-                        <td>Jane Smith</td>
-                        <td>jane.smith@example.com</td>
-                        <td>
-                            <button class="btn btn-info btn-sm">Edit</button>
-                            <button class="btn btn-danger btn-sm">Delete</button>
-                            <button class="btn btn-warning btn-sm">Attach Subject</button>
-                        </td>
-                    </tr>
-                    <!-- Additional rows can be populated dynamically -->
                 </tbody>
             </table>
         </div>
