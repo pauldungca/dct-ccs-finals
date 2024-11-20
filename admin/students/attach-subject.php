@@ -20,8 +20,8 @@
             <ul>
                 <li><strong>Student ID: </strong></li>
                 <li><strong>Name: </strong></li>
-                <hr>
             </ul>
+            <hr>
             <form method="post">
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" value="" id="subject1">
@@ -56,7 +56,7 @@
                         <td>John</td>
                         <td>Doe</td>
                         <td>
-                            <a href="./edit.php" class="btn btn-danger btn-sm">Dettach Subject</a>
+                            <a href="./dettach-subject.php" class="btn btn-danger btn-sm">Dettach Subject</a>
                             <a href="./delete.php" class="btn btn-success btn-sm">Assign Grade</a>
                         </td>
                     </tr>
