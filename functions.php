@@ -433,7 +433,37 @@
         return $attachedSubjects;
     }
 
-    
-    
+    function dettachSubjectFromStudent($studentId, $subjectCode) {
+        $con = openCon();
+        if ($con) {
+            // First, get the subject ID using the subject code
+            $stmt = $con->prepare("SELECT id FROM subjects WHERE subject_code = ?");
+            $stmt->bind_param("s", $subjectCode);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $subject = $result->fetch_assoc();
+            
+            if ($subject) {
+                $subjectId = $subject['id'];
+                
+                // Now, delete the record from the pivot table
+                $deleteStmt = $con->prepare("DELETE FROM students_subjects WHERE student_id = ? AND subject_id = ?");
+                $deleteStmt->bind_param("ii", $studentId, $subjectId);
+                $deleteStmt->execute();
+                
+                if ($deleteStmt->affected_rows > 0) {
+                    echo "Subject detached successfully.";
+                } else {
+                    echo "Error detaching subject.";
+                }
+                
+                $deleteStmt->close();
+            }
+            $stmt->close();
+            closeCon($con);
+        } else {
+            echo "Failed to connect to the database.";
+        }
+    }
 
 ?>
