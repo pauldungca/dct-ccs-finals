@@ -61,33 +61,38 @@
             <hr>
             <form method="post">
                 <div class="subjects-list">
-                    <?php if (!empty($subjects)): ?>
-                        <?php foreach ($subjects as $subject): ?>
-                            <!-- Only display the checkbox if the subject is NOT already attached -->
-                            <?php if (!in_array($subject['id'], $attachedSubjects)): ?>
-                                <div class="form-check">
-                                    <input 
-                                        class="form-check-input" 
-                                        type="checkbox" 
-                                        name="subject_ids[]" 
-                                        value="<?php echo htmlspecialchars($subject['id']); ?>" 
-                                        id="subject-<?php echo htmlspecialchars($subject['id']); ?>"
-                                    >
-                                    <label 
-                                        class="form-check-label" 
-                                        for="subject-<?php echo htmlspecialchars($subject['subject_code']); ?>"
-                                    >
-                                        <?php echo htmlspecialchars($subject['subject_code'] . " - " . $subject['subject_name']); ?>
-                                    </label>
-                                </div>
-                            <?php endif; ?>
+                    <?php 
+                    $availableSubjects = array_filter($subjects, function($subject) use ($attachedSubjects) {
+                        return !in_array($subject['id'], $attachedSubjects);
+                    });
+                    // Check if any subjects are available for attachment
+                    if (!empty($availableSubjects)): 
+                    ?>
+                        <?php foreach ($availableSubjects as $subject): ?>
+                            <div class="form-check">
+                                <input 
+                                    class="form-check-input" 
+                                    type="checkbox" 
+                                    name="subject_ids[]" 
+                                    value="<?php echo htmlspecialchars($subject['id']); ?>" 
+                                    id="subject-<?php echo htmlspecialchars($subject['id']); ?>"
+                                >
+                                <label 
+                                    class="form-check-label" 
+                                    for="subject-<?php echo htmlspecialchars($subject['subject_code']); ?>"
+                                >
+                                    <?php echo htmlspecialchars($subject['subject_code'] . " - " . $subject['subject_name']); ?>
+                                </label>
+                            </div>
                         <?php endforeach; ?>
                     <?php else: ?>
-                        <label class="form-check-label">No subjects available.</label>
+                        <label class="form-check-label">No subjects available to attach.</label>
                     <?php endif; ?>
                 </div>
-                <br>
-                <button type="submit" name="attachButton" class="btn btn-primary">Attach Subject</button>
+                <?php if (!empty($availableSubjects)): ?>
+                    <br>
+                    <button type="submit" name="attachButton" class="btn btn-primary">Attach Subject</button>
+                <?php endif; ?>
             </form>
         </div>
         <div class="card p-5 mb-4">
