@@ -1,5 +1,5 @@
 <?php 
-    $current_page = $_SERVER['REQUEST_URI'];
+    $current_page = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); // Get the path without query string
 ?>
 <div class="sidebar border border-right col-md-3 col-lg-2 p-0 bg-body-tertiary vh-100">
     <div class="offcanvas-md offcanvas-end bg-body-tertiary" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
