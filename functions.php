@@ -523,7 +523,23 @@
         closeCon($con);  // Close the database connection
         return $grade;
     }
-    
-    
-    
+
+    function countSubjects() {
+        $con = openCon();  
+        $query = "SELECT COUNT(*) AS total_subjects FROM subjects";
+        $result = $con->query($query);
+        $count = ($result && $result->num_rows > 0) ? $result->fetch_assoc()['total_subjects'] : 0;
+        closeCon($con); 
+        return $count;
+    }
+
+    function countStudents() {
+        $con = openCon();  
+        $query = "SELECT COUNT(*) AS total_students FROM students";
+        $result = $con->query($query);
+        $count = ($result && $result->num_rows > 0) ? $result->fetch_assoc()['total_students'] : 0;
+        closeCon($con);  
+        return $count;
+    }
+     
 ?>
