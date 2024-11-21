@@ -541,5 +541,41 @@
         closeCon($con);  
         return $count;
     }
+
+    function countFailedStudents() {
+        $con = openCon();
+        
+        // SQL query to count students whose average grade is <= 74.00
+        $query = "
+            SELECT student_id
+            FROM students_subjects
+            GROUP BY student_id
+            HAVING AVG(grade) <= 74.00
+        ";
+        
+        $result = $con->query($query);
+        $failedStudentsCount = $result->num_rows;
+    
+        closeCon($con);
+        return $failedStudentsCount;
+    }
+    
+    function countPassedStudents() {
+        $con = openCon();
+        
+        // SQL query to count students whose average grade is > 74.00
+        $query = "
+            SELECT student_id
+            FROM students_subjects
+            GROUP BY student_id
+            HAVING AVG(grade) > 74.00
+        ";
+        
+        $result = $con->query($query);
+        $passedStudentsCount = $result->num_rows;
+    
+        closeCon($con);
+        return $passedStudentsCount;
+    }
      
 ?>

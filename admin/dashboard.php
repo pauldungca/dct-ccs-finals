@@ -6,6 +6,8 @@
 
     $totalSubjects = countSubjects();
     $totalStudents = countStudents();
+    $failedStudents = countFailedStudents();
+    $passedStudents = countPassedStudents();
 
     include './partials/header.php';
     include './partials/side-bar.php';  
@@ -35,7 +37,7 @@
             <div class="card border-danger mb-3">
                 <div class="card-header bg-danger text-white border-danger">Number of Failed Students:</div>
                 <div class="card-body text-danger">
-                    <h5 class="card-title">0</h5>
+                    <h5 class="card-title"><?php echo $failedStudents ?></h5>
                 </div>
             </div>
         </div>
@@ -43,7 +45,7 @@
             <div class="card border-success mb-3">
                 <div class="card-header bg-success text-white border-success">Number of Passed Students:</div>
                 <div class="card-body text-success">
-                    <h5 class="card-title">0</h5>
+                    <h5 class="card-title"><?php echo $passedStudents ?></h5>
                 </div>
             </div>
         </div>
