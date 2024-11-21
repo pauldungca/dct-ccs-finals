@@ -25,8 +25,8 @@
         $grade = $_POST['grade'];
         
         // Validate the grade (it should not be greater than 100)
-        if ($grade > 100) {
-            $errorMessage = "Error: Grade cannot be greater than 100.";
+        if ($grade > 100 || $grade < 65) {
+            $errorMessage = "Grade must be between 65 and 100.";
         } else {
             // Update the grade in the students_subjects table
             assignGradeToSubject($studentId, $subjectCode, $grade);
