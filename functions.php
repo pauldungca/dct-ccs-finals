@@ -227,18 +227,37 @@
     function deleteSubject($subjectCode) {
         $con = openCon(); 
         if ($con) {
-            $stmt = $con->prepare("DELETE FROM subjects WHERE subject_code = ?");
-            $stmt->bind_param("s", $subjectCode);
-            if ($stmt->execute()) { 
-            } else {
-                echo "Error: " . $stmt->error;
+            // Begin transaction for safety
+            $con->begin_transaction();
+    
+            try {
+                // First, delete related records from the pivot table
+                $stmtPivot = $con->prepare("DELETE FROM students_subjects WHERE subject_id = (SELECT id FROM subjects WHERE subject_code = ?)");
+                $stmtPivot->bind_param("s", $subjectCode);
+                $stmtPivot->execute();
+    
+                // Then, delete the subject itself
+                $stmtSubject = $con->prepare("DELETE FROM subjects WHERE subject_code = ?");
+                $stmtSubject->bind_param("s", $subjectCode);
+                $stmtSubject->execute();
+    
+                // Commit the transaction
+                $con->commit();
+    
+                $stmtPivot->close();
+                $stmtSubject->close();
+            } catch (Exception $e) {
+                // Rollback transaction in case of an error
+                $con->rollback();
+                echo "Error: " . $e->getMessage();
             }
-            $stmt->close();
+    
             closeCon($con); 
         } else {
             echo "Failed to connect to the database.";
         }
     }
+    
 
     function fetchStudents() {
         $con = openCon(); 
@@ -347,19 +366,37 @@
     function deleteStudent($studentId) {
         $con = openCon(); 
         if ($con) {
-            $stmt = $con->prepare("DELETE FROM students WHERE student_id = ?");
-            $stmt->bind_param("s", $studentId);
-            if ($stmt->execute()) {
-               // echo "Student deleted successfully.";
-            } else {
-                echo "Error: " . $stmt->error;
+            // Begin transaction for safety
+            $con->begin_transaction();
+    
+            try {
+                // First, delete related records from the pivot table
+                $stmtPivot = $con->prepare("DELETE FROM students_subjects WHERE student_id = ?");
+                $stmtPivot->bind_param("s", $studentId);
+                $stmtPivot->execute();
+    
+                // Then, delete the student itself
+                $stmtStudent = $con->prepare("DELETE FROM students WHERE student_id = ?");
+                $stmtStudent->bind_param("s", $studentId);
+                $stmtStudent->execute();
+    
+                // Commit the transaction
+                $con->commit();
+    
+                $stmtPivot->close();
+                $stmtStudent->close();
+            } catch (Exception $e) {
+                // Rollback transaction in case of an error
+                $con->rollback();
+                echo "Error: " . $e->getMessage();
             }
-            $stmt->close();
+    
             closeCon($con); 
         } else {
             echo "Failed to connect to the database.";
         }
     }
+    
 
     function attachSubjectToStudent($studentId, $subjectId) {
         $defaultGrade = 0.00; // Default grade value
