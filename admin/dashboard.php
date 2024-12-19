@@ -53,4 +53,24 @@
 </main>
 <!-- Template Files here -->
 
+<!--<iframe
+    src="https://www.chatbase.co/chatbot-iframe/kZYX1CmnGYPrqYubVg17x"
+    width="100%"
+    style="height: 100%; min-height: 700px"
+    frameborder="0"
+></iframe>-->
+
+<script>
+    window.embeddedChatbotConfig = {
+        chatbotId: "kZYX1CmnGYPrqYubVg17x",
+        domain: "www.chatbase.co"
+    }
+</script>
+<script
+    src="https://www.chatbase.co/embed.min.js"
+    chatbotId="kZYX1CmnGYPrqYubVg17x"
+    domain="www.chatbase.co"
+    defer>
+</script>
+
 <?php include './partials/footer.php'; ?>
